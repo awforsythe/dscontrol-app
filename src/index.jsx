@@ -25,7 +25,8 @@ function App() {
       />
       <div style={{ border: '1px solid #ccc', width: 500, height: 500 }}>
         <Joystick
-          angle={angle}
+          size={200}
+          angle={angle / (180.0 / Math.PI)}
           distance={distance}
         />
       </div>
