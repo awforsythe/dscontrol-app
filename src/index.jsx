@@ -28,6 +28,10 @@ function App() {
           size={200}
           angle={angle / (180.0 / Math.PI)}
           distance={distance}
+          onChange={(targetAngle, targetDistance) => {
+            setAngle(targetAngle * (180.0 / Math.PI))
+            setDistance(targetDistance)
+          }}
         />
       </div>
     </>
