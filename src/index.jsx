@@ -4,7 +4,7 @@ import styled from 'styled-components'
 
 import Joystick from './components/Joystick.jsx'
 
-import './style.css'
+import './style.less'
 
 function App() {
   const [angle, setAngle] = useState(0.0)
