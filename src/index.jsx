@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
-import styled from 'styled-components'
 
 import Joystick from './components/Joystick.jsx'
+import Timeline from './components/Timeline.jsx'
 
 import './style.less'
 
@@ -23,10 +23,11 @@ function App() {
         </div>
       </div>
       <div id="main-bottom">
-        <div style={{ width: 500, height: '100%' }}>
+        <div style={{ flex: '0 0 250px', height: '100%', display: 'flex', flexDirection: 'column' }}>
           <label>angle: </label>
           <input
             type="number"
+            style={{ marginLeft: 10, width: 200 }}
             step={5}
             onChange={(event) => setAngle(event.target.value)}
             value={angle}
@@ -34,6 +35,7 @@ function App() {
           <label>distance: </label>
           <input
             type="number"
+            style={{ marginLeft: 10, width: 200 }}
             step={0.1}
             onChange={(event) => setDistance(event.target.value)}
             value={distance}
@@ -48,6 +50,7 @@ function App() {
             }}
           />
         </div>
+        <Timeline />
       </div>
     </>
   );
