@@ -9,6 +9,10 @@ module.exports = {
     filename: '[name].js',
     path: path.resolve(__dirname, 'dist'),
   },
+  resolve: {
+    mainFiles: ['index'],
+    extensions: ['.js', '.jsx'],
+  },
   plugins: [
     new HtmlWebpackPlugin({ title: 'dscontrol', template: './src/index.html' })
   ],

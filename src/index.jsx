@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
 
-import Joystick from './components/Joystick.jsx'
-import Timeline from './components/Timeline.jsx'
+import Joystick from './components/Joystick'
+import Timeline from './components/Timeline'
 
 import './style.less'
 
