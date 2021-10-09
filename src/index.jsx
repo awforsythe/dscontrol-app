@@ -19,6 +19,11 @@ function App() {
           middle left
         </div>
         <div id="main-right">
+          
+        </div>
+      </div>
+      <div id="main-bottom">
+        <div style={{ width: 500, height: '100%' }}>
           <label>angle: </label>
           <input
             type="number"
@@ -33,21 +38,16 @@ function App() {
             onChange={(event) => setDistance(event.target.value)}
             value={distance}
           />
-          <div style={{ border: '1px solid #ccc', width: 500, height: 500 }}>
-            <Joystick
-              size={200}
-              angle={angle / (180.0 / Math.PI)}
-              distance={distance}
-              onChange={(targetAngle, targetDistance) => {
-                setAngle(targetAngle * (180.0 / Math.PI))
-                setDistance(targetDistance)
-              }}
-            />
-          </div>
+          <Joystick
+            size={200}
+            angle={angle / (180.0 / Math.PI)}
+            distance={distance}
+            onChange={(targetAngle, targetDistance) => {
+              setAngle(targetAngle * (180.0 / Math.PI))
+              setDistance(targetDistance)
+            }}
+          />
         </div>
-      </div>
-      <div id="main-bottom">
-        bottom
       </div>
     </>
   );
