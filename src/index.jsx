@@ -50,7 +50,12 @@ function App() {
             }}
           />
         </div>
-        <Timeline />
+        <Timeline
+          duration={20.0}
+          visibleRangeStartTime={0.0}
+          visibleRangeEndTime={10.0}
+          playbackTime={5.0}
+        />
       </div>
     </>
   );

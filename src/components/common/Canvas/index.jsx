@@ -1,11 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react'
 import PropTypes from 'prop-types'
 
+import CanvasRegion from './CanvasRegion'
+import { getChildRegions, computeRegionRects } from './util'
+
 import './style.less'
 
 function Canvas(props) {
   // Maintain our canvas size to match 1:1 with the parent div
-  const [size, setSize] = useState({ x: 100, y: 100 })
+  const [size, setSize] = useState({ x: 16, y: 16 })
   
   // Capture a reference to the canvas element, and resize it to fit the parent
   const elem = useRef()
@@ -33,16 +36,22 @@ function Canvas(props) {
     ctx.current = null
     if (elem.current) {
       ctx.current = elem.current.getContext('2d')
-      ctx.current.lineWidth = 10
-      ctx.current.strokeStyle = '#c29f9f'
-      ctx.current.beginPath()
-      ctx.current.moveTo(0, 0)
-      ctx.current.lineTo(size.x, size.y)
-      ctx.current.moveTo(size.x, 0)
-      ctx.current.lineTo(0, size.y)
-      ctx.current.stroke()
     }
   }, [elem.current, size])
+
+  const { orientation, children } = props
+  useEffect(() => {
+    if (ctx.current) {
+      ctx.current.clearRect(0, 0, size.x, size.y)
+      const ownRect = { x: 0, y: 0, width: size.x, height: size.y }
+      const childRegions = getChildRegions(children)
+      const regionRects = computeRegionRects(orientation, ownRect, childRegions)
+      for (let regionIndex = 0; regionIndex < childRegions.length; regionIndex++) {
+        const regionProps = childRegions[regionIndex].props
+        regionProps.draw(ctx.current, regionRects[regionIndex])
+      }
+    }
+  }, [ctx.current, size, orientation, children.length])
 
   return (
     <div className="canvas-container">
@@ -53,11 +62,15 @@ function Canvas(props) {
         width={size.x}
         height={size.y}
       />
+      {children}
     </div>
   )
-
 }
 Canvas.propTypes = {
+  orientation: PropTypes.oneOf(['horizontal', 'vertical']).isRequired,
+  children: PropTypes.any,
 }
+
+Canvas.Region = CanvasRegion
 
 export default Canvas
