@@ -1,9 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 import PropTypes from 'prop-types'
 
-import CanvasRegion from './CanvasRegion'
-import { getChildRegions, computeRegionRects } from './util'
-
 import './style.less'
 
 function Canvas(props) {
@@ -31,27 +28,15 @@ function Canvas(props) {
   }, [])
 
   // Get a new 2D drawing context whenever our element ref or size changes
+  const { draw } = props
   const ctx = useRef()
   useEffect(() => {
     ctx.current = null
     if (elem.current) {
       ctx.current = elem.current.getContext('2d')
+      draw(ctx.current, size)
     }
   }, [elem.current, size])
-
-  const { orientation, children } = props
-  useEffect(() => {
-    if (ctx.current) {
-      ctx.current.clearRect(0, 0, size.x, size.y)
-      const ownRect = { x: 0, y: 0, width: size.x, height: size.y }
-      const childRegions = getChildRegions(children)
-      const regionRects = computeRegionRects(orientation, ownRect, childRegions)
-      for (let regionIndex = 0; regionIndex < childRegions.length; regionIndex++) {
-        const regionProps = childRegions[regionIndex].props
-        regionProps.draw(ctx.current, regionRects[regionIndex])
-      }
-    }
-  }, [ctx.current, size, orientation, children.length])
 
   return (
     <div className="canvas-container">
@@ -62,15 +47,11 @@ function Canvas(props) {
         width={size.x}
         height={size.y}
       />
-      {children}
     </div>
   )
 }
 Canvas.propTypes = {
-  orientation: PropTypes.oneOf(['horizontal', 'vertical']).isRequired,
-  children: PropTypes.any,
+  draw: PropTypes.func.isRequired,
 }
-
-Canvas.Region = CanvasRegion
 
 export default Canvas

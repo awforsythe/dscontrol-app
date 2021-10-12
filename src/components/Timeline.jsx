@@ -5,23 +5,26 @@ import Canvas from './common/Canvas'
 
 function Timeline(props) {
   const { duration, visibleRangeStartTime, visibleRangeEndTime, playbackTime } = props
-  function handleDraw(ctx, rect) {
+  function handleDraw(ctx, size) {
     let color = '#'
     for (let i = 0; i < 6; i++) {
       const chars = '0123456789abcdef'
       color += chars.charAt(Math.floor(Math.random() * chars.length))
     }
     ctx.fillStyle = color
-    ctx.fillRect(rect.x, rect.y, rect.width, rect.height)
-    console.log('draw', { ctx, rect })
+    ctx.fillRect(0, 0, size.x, size.y)
   }
   return (
     <div className="timeline">
-      <Canvas orientation="vertical">
-        <Canvas.Region orientation="horizontal" fixed={30} draw={handleDraw} />
-        <Canvas.Region orientation="horizontal" ratio={1.0} draw={handleDraw} />
-        <Canvas.Region orientation="horizontal" fixed={50} draw={handleDraw} />
-      </Canvas>
+      <div className="timeline-top">
+        <Canvas draw={handleDraw} />
+      </div>
+      <div className="timeline-middle">
+        <Canvas draw={handleDraw} />
+      </div>
+      <div className="timeline-bottom">
+        <Canvas draw={handleDraw} />
+      </div>
     </div>
   )
 }
