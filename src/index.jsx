@@ -9,6 +9,7 @@ import './style.less'
 function App() {
   const [angle, setAngle] = useState(0.0)
   const [distance, setDistance] = useState(0.0)
+  const [playbackTime, setPlaybackTime] = useState(5.0)
   return (
     <>
       <div id="main-top">
@@ -54,7 +55,8 @@ function App() {
           duration={20.0}
           visibleRangeStartTime={0.0}
           visibleRangeEndTime={10.0}
-          playbackTime={5.0}
+          playbackTime={playbackTime}
+          onJog={setPlaybackTime}
         />
       </div>
     </>

@@ -1,0 +1,32 @@
+@import "../../style.less";
+
+.timeline {
+    position: relative;
+    border: 1px solid @color-ui-border;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.timeline-top {
+    flex: 0 0 30px;
+    border-bottom: 1px solid @color-ui-border;
+}
+
+.timeline-middle {
+    flex: 1;
+    background-color: @color-ui-base;
+}
+
+.timeline-bottom {
+    border-top: 1px solid @color-ui-border;
+    flex: 0 0 50px;
+}
+
+.timeline-overlay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}

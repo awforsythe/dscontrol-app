@@ -28,7 +28,7 @@ function Canvas(props) {
   }, [])
 
   // Get a new 2D drawing context whenever our element ref or size changes
-  const { draw } = props
+  const { draw, children, ...rest } = props
   const ctx = useRef()
   useEffect(() => {
     ctx.current = null
@@ -38,7 +38,6 @@ function Canvas(props) {
     }
   }, [elem.current, size])
 
-  const { children } = props
   return (
     <div className="canvas-container">
       <canvas
@@ -47,6 +46,7 @@ function Canvas(props) {
         style={{ width: '100%', height: size.y }}
         width={size.x}
         height={size.y}
+        {...rest}
       />
       {children && (
         <div className="canvas-overlay">
