@@ -38,6 +38,7 @@ function Canvas(props) {
     }
   }, [elem.current, size])
 
+  const { children } = props
   return (
     <div className="canvas-container">
       <canvas
@@ -47,11 +48,17 @@ function Canvas(props) {
         width={size.x}
         height={size.y}
       />
+      {children && (
+        <div className="canvas-overlay">
+          {children}
+        </div>
+      )}
     </div>
   )
 }
 Canvas.propTypes = {
   draw: PropTypes.func.isRequired,
+  children: PropTypes.any,
 }
 
 export default Canvas

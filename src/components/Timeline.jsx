@@ -17,7 +17,9 @@ function Timeline(props) {
   return (
     <div className="timeline">
       <div className="timeline-top">
-        <Canvas draw={handleDraw} />
+        <Canvas draw={handleDraw}>
+          <p>top</p>
+        </Canvas>
       </div>
       <div className="timeline-middle">
         <Canvas draw={handleDraw} />
