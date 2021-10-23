@@ -23,14 +23,8 @@ function Timeline(props) {
     }
   }
 
-  function handleGlobalMouseMove(event) {
-    scrubTo(event.clientX)
-  }
-
-  function handleGlobalMouseUp() {
-    setIsScrubbing(false)
-  }
-
+  const handleGlobalMouseMove = (event) => scrubTo(event.clientX)
+  const handleGlobalMouseUp = () => setIsScrubbing(false)
   function removeGlobalEventListeners() {
     window.removeEventListener('mousemove', handleGlobalMouseMove)
     window.removeEventListener('mouseup', handleGlobalMouseUp)
@@ -46,18 +40,27 @@ function Timeline(props) {
     return removeGlobalEventListeners
   }, [isScrubbing])
 
-  function handleBottomMouseDown(event) {
-    setIsScrubbing(true)
-    scrubTo(event.clientX)
+  function handleScrubAreaMouseDown(event) {
+    if (!isScrubbing) {
+      setIsScrubbing(true)
+      scrubTo(event.clientX)
+    }
   }
 
   return (
     <div className="timeline">
-      <div className="timeline-top">
+      <div
+        className="timeline-top"
+        onMouseDown={handleScrubAreaMouseDown}
+      >
       </div>
       <div className="timeline-middle">
       </div>
-      <div className="timeline-bottom" ref={bottomRef} onMouseDown={handleBottomMouseDown}>
+      <div
+        className="timeline-bottom"
+        ref={bottomRef}
+        onMouseDown={handleScrubAreaMouseDown}
+      >
       </div>
       <div className="timeline-overlay">
         <Playhead normalizedPosition={progress} isScrubbing={isScrubbing} />
