@@ -1,27 +1,23 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import Canvas from '../common/Canvas'
-import { useInputRect } from '../util'
-
+import { useElementRect } from '../common/util'
 import Playhead from './Playhead'
 
 import './style.less'
 
 function Timeline(props) {
   const { duration, visibleRangeStartTime, visibleRangeEndTime, playbackTime, onJog } = props
-  const [bottomRef, checkBottomRect] = useInputRect()
+  const [bottomRef, bottomRect] = useElementRect()
 
   const visibleDuration = visibleRangeEndTime - visibleRangeStartTime
   const progress = (playbackTime - visibleRangeStartTime) / visibleDuration
 
   function handleBottomClick(event) {
-    console.log('bottomclick')
-    const bottom = checkBottomRect(event.clientX, event.clientY)
-    if (bottom.inBounds) {
-      console.log('invounds')
+    if (bottomRect) {
+      const targetProgress = (event.clientX - bottomRect.left) / bottomRect.width
       const visibleDuration = visibleRangeEndTime - visibleRangeStartTime
-      const newPlaybackTime = visibleRangeStartTime + (bottom.x / bottom.width) * visibleDuration
+      const newPlaybackTime = visibleRangeStartTime + targetProgress * visibleDuration
       onJog(newPlaybackTime)
     }
   }
@@ -36,10 +32,7 @@ function Timeline(props) {
         let's just see whether that is actually the case
       </div>
       <div className="timeline-overlay">
-        <Playhead
-          isVisible={progress >= 0.0 && progress <= 1.0}
-          xOffset={`${(progress * 100.0).toFixed(4)}%`}
-        />
+        <Playhead normalizedPosition={progress} />
       </div>
     </div>
   )
