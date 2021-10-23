@@ -1,14 +1,28 @@
 @color-ui-base: #282828;
 @color-ui-dark: #202020;
+@color-ui-light: #5c5c5c;
 @color-ui-border: #696969;
 @color-ui-border-dark: #333333;
 
 @color-text-primary: #efefef;
 @color-text-secondary: #ccc;
 
+@color-button-bg: lighten(@color-ui-base, 5%);
+@color-button-bg-hover: lighten(@color-ui-base, 10%);
+@color-button-bg-click: @color-ui-base;
+
+@color-button-border: @color-ui-border;
+@color-button-border-hover: lighten(@color-ui-border, 10%);
+@color-button-border-click: @color-ui-light;
+
 * {
     margin: 0;
     padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+button {
+    border: 0;
 }
 
 div {
@@ -17,7 +31,6 @@ div {
 
 body {
     color: @color-text-primary;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 html, body, #main {
@@ -64,4 +77,21 @@ html, body, #main {
     background-color: @color-ui-dark;
     border-top: 1px solid @color-ui-border;
     padding: 8px;
+}
+
+button {
+    border: 1px solid @color-button-border;
+    border-radius: 2px;
+    background-color: @color-button-bg;
+    color: @color-text-secondary;
+}
+
+button:hover {
+    border-color: @color-button-border-hover;
+    background-color: @color-button-bg-hover;
+}
+
+button:active {
+    border-color: @color-button-border-click;
+    background-color: @color-button-bg-click;
 }

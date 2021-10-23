@@ -1,0 +1,49 @@
+@import "../../style.less";
+
+.timeline-controls {
+    position: relative;
+    border: 1px solid @color-ui-border;
+    border-right-color: @color-ui-border-dark;
+    flex: 0 0 180px;
+    display: flex;
+    flex-direction: column;
+}
+
+.timeline-controls-top {
+    flex: 0 0 30px;
+    border-bottom: 1px solid @color-ui-border-dark;
+}
+
+.timeline-controls-middle {
+    flex: 1;
+}
+
+.timeline-controls-bottom {
+    border-top: 1px solid @color-ui-border-dark;
+    flex: 0 0 50px;
+}
+
+.playback-buttons {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.playback-buttons button {
+    height: 26px;
+    width: 38px;
+    margin-right: 4px;
+    letter-spacing: -3px;
+}
+
+.playback-buttons button:last-child {
+    margin-right: 0;
+}
+
+.playback-buttons button.play {
+    height: 32px;
+    width: 48px;
+    letter-spacing: inherit;
+    font-size: 14px;
+}

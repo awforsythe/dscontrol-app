@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
 
 import Joystick from './components/Joystick'
+import TimelineControls from './components/TimelineControls'
 import Timeline from './components/Timeline'
 
 import './style.less'
@@ -51,6 +52,9 @@ function App() {
             }}
           />
         </div>
+        <TimelineControls
+          
+        />
         <Timeline
           duration={20.0}
           visibleRangeStartTime={0.0}
