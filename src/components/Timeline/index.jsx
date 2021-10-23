@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 
 import { useElementRect } from '../common/util'
+import RangeBar from './RangeBar'
 import Playhead from './Playhead'
 
 import './style.less'
@@ -62,9 +63,8 @@ function Timeline(props) {
         onMouseDown={handleScrubAreaMouseDown}
       >
       </div>
-      <div className="timeline-overlay">
-        <Playhead normalizedPosition={progress} isScrubbing={isScrubbing} />
-      </div>
+      <Playhead normalizedPosition={progress} isScrubbing={isScrubbing} />
+      <RangeBar normalizedPosition={visibleRangeStartTime / duration} normalizedDuration={visibleDuration / duration} />
     </div>
   )
 }

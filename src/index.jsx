@@ -57,8 +57,8 @@ function App() {
         />
         <Timeline
           duration={20.0}
-          visibleRangeStartTime={0.0}
-          visibleRangeEndTime={10.0}
+          visibleRangeStartTime={2.0}
+          visibleRangeEndTime={15.0}
           playbackTime={playbackTime}
           onJog={setPlaybackTime}
         />

@@ -23,7 +23,7 @@
     flex: 0 0 50px;
 }
 
-.timeline-overlay {
+.playhead-container {
     position: absolute;
     left: 0;
     top: 0;
@@ -32,13 +32,39 @@
     pointer-events: none;
 }
 
-.timeline-playhead {
+.playhead {
     position: relative;
     height: 100%;
     width: 2px;
     background-color: fade(#cc4444, 75%);
 }
 
-.timeline-playhead.scrubbing {
+.playhead.scrubbing {
     background-color: fade(lighten(#cc4444, 10%), 33%);
+}
+
+.range-bar-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    height: 30px;
+    padding: 5px;
+    padding-bottom: 6px;
+    pointer-events: none;
+}
+
+.range-bar {
+    position: relative;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 20%);
+    pointer-events: auto;
+}
+
+.range-bar:hover {
+    background-color: rgba(255, 255, 255, 30%);
+}
+
+.range-bar:active {
+    background-color: rgba(255, 255, 255, 40%);
 }
