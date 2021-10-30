@@ -8,7 +8,7 @@ import Playhead from './Playhead'
 import './style.less'
 
 function Timeline(props) {
-  const { duration, visibleRangeStartTime, visibleRangeEndTime, playbackTime, onJog } = props
+  const { isPlaying, duration, visibleRangeStartTime, visibleRangeEndTime, playbackTime, onJog } = props
   const [bottomRef, bottomRect] = useElementRect()
   const [isScrubbing, setIsScrubbing] = useState(false)
 
@@ -63,12 +63,13 @@ function Timeline(props) {
         onMouseDown={handleScrubAreaMouseDown}
       >
       </div>
-      <Playhead normalizedPosition={progress} isScrubbing={isScrubbing} />
+      <Playhead normalizedPosition={progress} isScrubbing={!isPlaying && isScrubbing} />
       <RangeBar normalizedPosition={visibleRangeStartTime / duration} normalizedDuration={visibleDuration / duration} />
     </div>
   )
 }
 Timeline.propTypes = {
+  isPlaying: PropTypes.bool.isRequired,
   duration: PropTypes.number.isRequired,
   visibleRangeStartTime: PropTypes.number.isRequired,
   visibleRangeEndTime: PropTypes.number.isRequired,

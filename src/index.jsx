@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useRef, useState, useEffect, useLayoutEffect } from 'react'
 import ReactDOM from 'react-dom'
 
 import Joystick from './components/Joystick'
@@ -7,10 +7,49 @@ import Timeline from './components/Timeline'
 
 import './style.less'
 
+function usePlaybackState() {
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [playbackStartTime, setPlaybackStartTime] = useState(0.0)
+
+  function onTogglePlayback() {
+    setIsPlaying((prev) => !prev)
+  }
+
+  function onJog(desiredPlaybackTime) {
+    if (!isPlaying) {
+      setPlaybackStartTime(desiredPlaybackTime)
+    }
+  }
+
+  const prevTimestamp = useRef(null)
+  const handle = useRef(null)
+  function tick(timestamp) {
+    if (prevTimestamp.current !== null) {
+      const deltaSeconds = (timestamp - prevTimestamp.current) / 1000.0
+      setPlaybackStartTime((prev) => prev + deltaSeconds)
+    }
+    prevTimestamp.current = timestamp
+    handle.current = requestAnimationFrame(tick)
+  }
+
+  useEffect(() => {
+    handle.current = requestAnimationFrame(tick)
+    return () => {
+      cancelAnimationFrame(handle.current)
+    }
+  }, [])
+
+  const playbackTime = playbackStartTime
+  return [isPlaying, playbackTime, onTogglePlayback, onJog]
+}
+
 function App() {
   const [angle, setAngle] = useState(0.0)
   const [distance, setDistance] = useState(0.0)
-  const [playbackTime, setPlaybackTime] = useState(5.0)
+
+  const [duration, setDuration] = useState(20.0)
+  const [isPlaying, playbackTime, onTogglePlayback, onJog] = usePlaybackState()
+
   return (
     <>
       <div id="main-top">
@@ -53,14 +92,16 @@ function App() {
           />
         </div>
         <TimelineControls
-          
+          isPlaying={isPlaying}
+          onTogglePlayback={onTogglePlayback}
         />
         <Timeline
-          duration={20.0}
+          isPlaying={isPlaying}
+          duration={duration}
           visibleRangeStartTime={2.0}
           visibleRangeEndTime={15.0}
           playbackTime={playbackTime}
-          onJog={setPlaybackTime}
+          onJog={onJog}
         />
       </div>
     </>
