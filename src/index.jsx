@@ -11,16 +11,6 @@ function usePlaybackState() {
   const [isPlaying, setIsPlaying] = useState(false)
   const [playbackStartTime, setPlaybackStartTime] = useState(0.0)
 
-  function onTogglePlayback() {
-    setIsPlaying((prev) => !prev)
-  }
-
-  function onJog(desiredPlaybackTime) {
-    if (!isPlaying) {
-      setPlaybackStartTime(desiredPlaybackTime)
-    }
-  }
-
   const prevTimestamp = useRef(null)
   const handle = useRef(null)
   function tick(timestamp) {
@@ -32,12 +22,25 @@ function usePlaybackState() {
     handle.current = requestAnimationFrame(tick)
   }
 
-  useEffect(() => {
-    handle.current = requestAnimationFrame(tick)
-    return () => {
-      cancelAnimationFrame(handle.current)
+  function onTogglePlayback() {
+    if (isPlaying) {
+      setIsPlaying(false)
+      if (handle.current) {
+        cancelAnimationFrame(handle.current)
+        handle.current = null
+      }
+    } else {
+      setIsPlaying(true)
+      prevTimestamp.current = null
+      handle.current = requestAnimationFrame(tick)
     }
-  }, [])
+  }
+
+  function onJog(desiredPlaybackTime) {
+    if (!isPlaying) {
+      setPlaybackStartTime(desiredPlaybackTime)
+    }
+  }
 
   const playbackTime = playbackStartTime
   return [isPlaying, playbackTime, onTogglePlayback, onJog]
