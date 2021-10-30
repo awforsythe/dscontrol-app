@@ -105,7 +105,11 @@ function App() {
           visibleRangeEndTime={15.0}
           playbackTime={playbackTime}
           onJog={onJog}
-        />
+        >
+          <div style={{ backgroundColor: 'rgba(128, 128, 255, 10%)'}} />
+          <div style={{ backgroundColor: 'rgba(128, 128, 255, 10%)'}} />
+          <div style={{ backgroundColor: 'rgba(128, 128, 255, 10%)'}} />
+        </Timeline>
       </div>
     </>
   );

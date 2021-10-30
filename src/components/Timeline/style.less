@@ -16,6 +16,17 @@
 .timeline-middle {
     flex: 1;
     background-color: @color-ui-base;
+    display: flex;
+    flex-direction: column;
+}
+
+.timeline-middle > div {
+    flex: 1;
+    margin-bottom: 4px;
+}
+
+.timeline-middle > div:last-child {
+    margin-bottom: 0;
 }
 
 .timeline-bottom {

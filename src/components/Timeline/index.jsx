@@ -8,7 +8,7 @@ import Playhead from './Playhead'
 import './style.less'
 
 function Timeline(props) {
-  const { isPlaying, duration, visibleRangeStartTime, visibleRangeEndTime, playbackTime, onJog } = props
+  const { children, isPlaying, duration, visibleRangeStartTime, visibleRangeEndTime, playbackTime, onJog } = props
   const [bottomRef, bottomRect] = useElementRect()
   const [isScrubbing, setIsScrubbing] = useState(false)
 
@@ -56,6 +56,7 @@ function Timeline(props) {
       >
       </div>
       <div className="timeline-middle">
+        {children}
       </div>
       <div
         className="timeline-bottom"
@@ -69,6 +70,7 @@ function Timeline(props) {
   )
 }
 Timeline.propTypes = {
+  children: PropTypes.any,
   isPlaying: PropTypes.bool.isRequired,
   duration: PropTypes.number.isRequired,
   visibleRangeStartTime: PropTypes.number.isRequired,
