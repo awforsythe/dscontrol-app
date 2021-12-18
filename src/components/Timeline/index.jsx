@@ -29,6 +29,7 @@ function Timeline(props) {
     }
   })
 
+  const { onAdjustVisibleRange } = props
   return (
     <div className="timeline">
       <div
@@ -52,6 +53,12 @@ function Timeline(props) {
       <RangeBar
         normalizedPosition={visibleRangeStartTime / duration}
         normalizedDuration={visibleDuration / duration}
+        onDrag={(newNormalizedPosition) => {
+          const existingDuration = visibleRangeEndTime - visibleRangeStartTime
+          const newStartTime = newNormalizedPosition * duration
+          const newEndTime = newStartTime + existingDuration
+          onAdjustVisibleRange(newStartTime, newEndTime)
+        }}
       />
     </div>
   )
@@ -64,6 +71,7 @@ Timeline.propTypes = {
   visibleRangeEndTime: PropTypes.number.isRequired,
   playbackTime: PropTypes.number.isRequired,
   onJog: PropTypes.func.isRequired,
+  onAdjustVisibleRange: PropTypes.func.isRequired,
 }
 
 export default Timeline

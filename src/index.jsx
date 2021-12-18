@@ -52,6 +52,19 @@ function App() {
   const [distance, setDistance] = useState(0.0)
 
   const [duration, setDuration] = useState(20.0)
+  const [visibleRangeStartTime, setVisibleRangeStartTime] = useState(2.0)
+  const [visibleRangeEndTime, setVisibleRangeEndTime] = useState(15.0)
+  function onAdjustVisibleRange(newStartTime, newEndTime) {
+    const needsSwap = newStartTime > newEndTime
+    const actualNewStartTime = needsSwap ? newEndTime : newStartTime
+    const actualNewEndTime = needsSwap ? newStartTime : newEndTime
+    const clampedNewStartTime = Math.max(0.0, actualNewStartTime)
+    const clampedNewEndTime = Math.min(duration, actualNewEndTime)
+    setVisibleRangeStartTime(clampedNewStartTime)
+    setVisibleRangeEndTime(clampedNewEndTime)
+  }
+
+
   const [isPlaying, playbackTime, onTogglePlayback, onJog] = usePlaybackState()
 
   useGlobalKeyDownHandler((event) => {
@@ -110,10 +123,11 @@ function App() {
         <Timeline
           isPlaying={isPlaying}
           duration={duration}
-          visibleRangeStartTime={2.0}
-          visibleRangeEndTime={15.0}
+          visibleRangeStartTime={visibleRangeStartTime}
+          visibleRangeEndTime={visibleRangeEndTime}
           playbackTime={playbackTime}
           onJog={onJog}
+          onAdjustVisibleRange={onAdjustVisibleRange}
         >
           <div style={{ backgroundColor: 'rgba(128, 128, 255, 10%)'}} />
           <div style={{ backgroundColor: 'rgba(128, 128, 255, 10%)'}} />
