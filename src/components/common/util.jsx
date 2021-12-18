@@ -18,4 +18,13 @@ function useElementRect() {
   return [ref, rect]
 }
 
-export { useElementRect }
+function useGlobalKeyDownHandler(func) {
+  useEffect(() => {
+    window.addEventListener('keydown', func)
+    return () => {
+      window.removeEventListener('keydown', func)
+    }
+  })
+}
+
+export { useElementRect, useGlobalKeyDownHandler }

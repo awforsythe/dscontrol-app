@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect, useLayoutEffect } from 'react'
 import ReactDOM from 'react-dom'
 
+import { useGlobalKeyDownHandler } from './components/common/util'
 import Joystick from './components/Joystick'
 import TimelineControls from './components/TimelineControls'
 import Timeline from './components/Timeline'
@@ -52,6 +53,14 @@ function App() {
 
   const [duration, setDuration] = useState(20.0)
   const [isPlaying, playbackTime, onTogglePlayback, onJog] = usePlaybackState()
+
+  useGlobalKeyDownHandler((event) => {
+    if (event.key == ' ') {
+      if (event.target.className !== 'play') {
+        onTogglePlayback()
+      }
+    }
+  })
 
   return (
     <>
