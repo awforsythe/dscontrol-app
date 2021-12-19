@@ -53,10 +53,9 @@ function Timeline(props) {
       <RangeBar
         normalizedPosition={visibleRangeStartTime / duration}
         normalizedDuration={visibleDuration / duration}
-        onDrag={(newNormalizedPosition) => {
-          const existingDuration = visibleRangeEndTime - visibleRangeStartTime
-          const newStartTime = newNormalizedPosition * duration
-          const newEndTime = newStartTime + existingDuration
+        onAdjustRange={(newNormalizedStartPosition, newNormalizedEndPosition) => {
+          const newStartTime = newNormalizedStartPosition * duration
+          const newEndTime = newNormalizedEndPosition * duration
           onAdjustVisibleRange(newStartTime, newEndTime)
         }}
       />

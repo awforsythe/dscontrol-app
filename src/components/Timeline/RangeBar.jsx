@@ -7,58 +7,99 @@ function getPadding(elem, dir) {
   return parseInt(window.getComputedStyle(elem).getPropertyValue(`padding-${dir}`).replace('px', ''))
 }
 
+function useRangeBarDivs() {
+  const containerRef = useRef(null)
+  const startHandleRef = useRef(null)
+  const innerRef = useRef(null)
+  const endHandleRef = useRef(null)
+
+  function initDragState(event) {
+    // If we don't have a valid, return initial/null state without computing bounding rects etc.
+    if (!event || !event.target) {
+      return { mode: null }
+    }
+
+    // If we're processing an actual event, get the horizontal extent of the 'rail' the bar rides in
+    const container = containerRef.current.getBoundingClientRect()
+    const railStartX = container.left + getPadding(containerRef.current, 'left')
+    const railEndX = container.right - getPadding(containerRef.current, 'right')
+
+    // Get bounding boxes for each of our three bar elements: start handle, inner region, and end handle
+    const startHandle = startHandleRef.current.getBoundingClientRect()
+    const inner = innerRef.current.getBoundingClientRect()
+    const endHandle = endHandleRef.current.getBoundingClientRect()
+
+    // If we're dragging the start handle, adjust the start position while keeping the end position fixed
+    if (event.target === startHandleRef.current) {
+      const startX = startHandle.x
+      const minX = railStartX
+      const maxX = inner.right - startHandle.width
+      return {
+        mode: 'adjust-start',
+        mouseX: event.clientX,
+        toNormalizedRange: (mouseDeltaX, existingStart, existingDuration) => {
+          const newElemX = Math.min(maxX, Math.max(minX, startX + mouseDeltaX))
+          const newNormalizedStartPosition = (newElemX - railStartX) / (railEndX - railStartX)
+          return [newNormalizedStartPosition, existingStart + existingDuration]
+        },
+      }
+    }
+
+    // If dragging the bar itself, adjust the start position while keeping the _duration_ fixed
+    if (event.target === innerRef.current) {
+      const startX = inner.x
+      const minX = railStartX + startHandle.width
+      const maxX = railEndX - endHandle.width - inner.width
+      return {
+        mode: 'scroll',
+        mouseX: event.clientX,
+        toNormalizedRange: (mouseDeltaX, existingStart, existingDuration) => {
+          const newElemX = Math.min(maxX, Math.max(minX, startX + mouseDeltaX))
+          const newNormalizedStartPosition = (newElemX - startHandle.width - railStartX) / (railEndX - railStartX)
+          return [newNormalizedStartPosition, newNormalizedStartPosition + existingDuration]
+        },
+      }
+    }
+    
+    // If dragging the end handle, adjust the duration / end position while keeping the start position fixed
+    if (event.target === endHandleRef.current) {
+      const startX = endHandle.x
+      const minX = inner.left
+      const maxX = railEndX - endHandle.width
+      return {
+        mode: 'adjust-end',
+        mouseX: event.clientX,
+        toNormalizedRange: (mouseDeltaX, existingStart, existingDuration) => {
+          const newElemX = Math.min(maxX, Math.max(minX, startX + mouseDeltaX))
+          const newNormalizedEndPosition = (newElemX + endHandle.width - railStartX) / (railEndX - railStartX)
+          return [existingStart, newNormalizedEndPosition]
+        },
+      }
+    }
+
+    // Failsafe in case of bad event: no drag state to act upon
+    return { mode: null }
+  }
+
+  return [containerRef, startHandleRef, innerRef, endHandleRef, initDragState]
+}
 
 function RangeBar(props) {
   const { normalizedPosition, normalizedDuration } = props
   const leftOffsetPercentage =  (normalizedPosition * 100.0).toFixed(4)
   const widthPercentage = (normalizedDuration * 100.0).toFixed(4)
 
-  const containerRef = useRef(null)
-  const barRef = useRef(null)
-  const [dragStart, setDragStart] = useState({
-    initialized: false,
-    mouseX: 0,
-    paddingLeft: 0,
-    paddingRight: 0,
-    barX: 0,
-  })
+  const [containerRef, startHandleRef, innerRef, endHandleRef, initDragState] = useRangeBarDivs()
+  const [dragState, setDragState] = useState(initDragState(null))
 
-  const { onDrag } = props
+  const { onAdjustRange } = props
   const [isDragging, startDragging] = useGlobalDragHandler((event) => {
     if (event.type === 'mousedown') {
-      // If this is the start of a drag, cache the starting X position of the bar and the mouse cursor
-      if (containerRef.current && barRef.current) {
-        setDragStart({
-          initialized: true,
-          mouseX: event.clientX,
-          paddingLeft: getPadding(containerRef.current, 'left'),
-          paddingRight: getPadding(containerRef.current, 'right'),
-          barX: barRef.current.getBoundingClientRect().x,
-        })
-      }
-    } else {
-      // If the mouse is being moved while dragging, make sure we have valid drag start state
-      if (dragStart.initialized && containerRef.current && barRef.current) {
-        // Get the bounding rects for the bar and the container div it sits within
-        const containerRect = containerRef.current.getBoundingClientRect()
-        const barRect = barRef.current.getBoundingClientRect()
-
-        // Determine the minimum and maximum clientX that the bar can have while remaining in the container
-        const barMinX = containerRect.left + dragStart.paddingLeft
-        const barMaxX = containerRect.right - dragStart.paddingRight - barRect.width
-
-        // Determine the total width of the area within the container that the bar can move within
-        const containerTrackWidth = barMaxX - barMinX + barRect.width
-
-        // Figure out how far the cursor has moved to the left or right since drag start, and shift the bar's clientX accordingly
-        const mouseDeltaX = event.clientX - dragStart.mouseX
-        const newBarX = dragStart.barX + mouseDeltaX
-        const clampedBarX = Math.min(barMaxX, Math.max(barMinX, newBarX))
-
-        // Convert that screen coordinate to a new [0..1] playback position representing the start of the visible range
-        const newNormalizedPosition = (clampedBarX - barMinX) / containerTrackWidth
-        onDrag(newNormalizedPosition)
-      }
+      setDragState(initDragState(event))
+    } else if (dragState.mode) {
+      const mouseDeltaX = event.clientX - dragState.mouseX
+      const [newStart, newEnd] = dragState.toNormalizedRange(mouseDeltaX, normalizedPosition, normalizedDuration)
+      onAdjustRange(newStart, newEnd)
     }
   })
 
@@ -69,20 +110,31 @@ function RangeBar(props) {
     >
       <div
         className="range-bar"
-        ref={barRef}
         style={{
           left: `${leftOffsetPercentage}%`,
           width: `${widthPercentage}%`,
         }}
-        onMouseDown={startDragging}
-      />
+      >
+        <div className="range-bar-handle"
+          ref={startHandleRef}
+          onMouseDown={startDragging}
+        />
+        <div className="range-bar-inner"
+          ref={innerRef}
+          onMouseDown={startDragging}
+        />
+        <div className="range-bar-handle"
+          ref={endHandleRef}
+          onMouseDown={startDragging}
+        />
+      </div>
     </div>
   )
 }
 RangeBar.propTypes = {
   normalizedPosition: PropTypes.number.isRequired,
   normalizedDuration: PropTypes.number.isRequired,
-  onDrag: PropTypes.func.isRequired,
+  onAdjustRange: PropTypes.func.isRequired,
 }
 
 export default RangeBar

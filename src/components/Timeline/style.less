@@ -62,20 +62,31 @@
     height: 30px;
     padding: 5px;
     padding-bottom: 6px;
-    pointer-events: none;
 }
 
 .range-bar {
     position: relative;
     height: 100%;
-    background-color: rgba(255, 255, 255, 20%);
-    pointer-events: auto;
+    display: flex;
 }
 
-.range-bar:hover {
+.range-bar-inner {
+    flex: 1 0 0;
+}
+
+.range-bar-handle {
+    flex-basis: 20px;
+}
+
+.range-bar-inner, .range-bar-handle {
+    pointer-events: auto;
+    background-color: rgba(255, 255, 255, 20%);
+}
+
+.range-bar-inner:hover, .range-bar-handle:hover {
     background-color: rgba(255, 255, 255, 30%);
 }
 
-.range-bar:active {
+.range-bar-inner:active, .range-bar-handle:active {
     background-color: rgba(255, 255, 255, 40%);
 }
