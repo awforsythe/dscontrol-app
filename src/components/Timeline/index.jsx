@@ -51,6 +51,7 @@ function Timeline(props) {
         isScrubbing={!isPlaying && isScrubbing}
       />
       <RangeBar
+        normalizedPlaybackPosition={Math.max(0.0, Math.min(1.0, playbackTime / duration))}
         normalizedPosition={visibleRangeStartTime / duration}
         normalizedDuration={visibleDuration / duration}
         onAdjustRange={(newNormalizedStartPosition, newNormalizedEndPosition) => {

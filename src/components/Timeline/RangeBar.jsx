@@ -85,8 +85,9 @@ function useRangeBarDivs() {
 }
 
 function RangeBar(props) {
-  const { normalizedPosition, normalizedDuration } = props
-  const leftOffsetPercentage =  (normalizedPosition * 100.0).toFixed(4)
+  const { normalizedPlaybackPosition, normalizedPosition, normalizedDuration } = props
+  const playheadIndicatorLeftOffsetPercentage = (normalizedPlaybackPosition * 100.0).toFixed(4)
+  const leftOffsetPercentage = (normalizedPosition * 100.0).toFixed(4)
   const widthPercentage = (normalizedDuration * 100.0).toFixed(4)
 
   const [containerRef, startHandleRef, innerRef, endHandleRef, initDragState] = useRangeBarDivs()
@@ -108,6 +109,12 @@ function RangeBar(props) {
       className="range-bar-container"
       ref={containerRef}
     >
+      <div className="range-bar-playhead-indicator-container">
+        <div
+          className="range-bar-playhead-indicator"
+          style={{ left: `${playheadIndicatorLeftOffsetPercentage}%` }}
+        />
+      </div>
       <div
         className="range-bar"
         style={{
@@ -132,6 +139,7 @@ function RangeBar(props) {
   )
 }
 RangeBar.propTypes = {
+  normalizedPlaybackPosition: PropTypes.number.isRequired,
   normalizedPosition: PropTypes.number.isRequired,
   normalizedDuration: PropTypes.number.isRequired,
   onAdjustRange: PropTypes.func.isRequired,
