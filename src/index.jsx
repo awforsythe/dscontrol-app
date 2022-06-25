@@ -1,12 +1,19 @@
-import React, { useRef, useState, useEffect, useLayoutEffect } from 'react'
+import React, { useRef, useState } from 'react'
 import ReactDOM from 'react-dom'
 
+import Store from './state'
+
+import { useRenderLoop } from './util'
+
 import { useGlobalKeyDownHandler } from './components/common/util'
+import PlaybackView from './components/PlaybackView'
 import Joystick from './components/Joystick'
 import TimelineControls from './components/TimelineControls'
 import Timeline from './components/Timeline'
 
 import './style.less'
+
+const store = new Store()
 
 function usePlaybackState() {
   const [isPlaying, setIsPlaying] = useState(false)
@@ -47,7 +54,7 @@ function usePlaybackState() {
   return [isPlaying, playbackTime, onTogglePlayback, onJog]
 }
 
-function App() {
+function App({ store }) {
   const [angle, setAngle] = useState(0.0)
   const [distance, setDistance] = useState(0.0)
 
@@ -64,6 +71,7 @@ function App() {
     setVisibleRangeEndTime(clampedNewEndTime)
   }
 
+  useRenderLoop((deltaSeconds) => {store.playback.tick(deltaSeconds)})
 
   const [isPlaying, playbackTime, onTogglePlayback, onJog] = usePlaybackState()
 
@@ -82,7 +90,7 @@ function App() {
       </div>
       <div id="main-middle">
         <div id="main-left">
-          middle left
+          <PlaybackView playback={store.playback} />
         </div>
         <div id="main-right">
           
@@ -138,4 +146,4 @@ function App() {
   );
 }
 
-ReactDOM.render(<App />, document.getElementById('main'));
+ReactDOM.render(<App store={store} />, document.getElementById('main'));
