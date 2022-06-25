@@ -30,6 +30,7 @@ class Playback {
       seekToEnd: action,
       scrubTo: action,
       adjustVisibleRange: action,
+      zoomExtents: action,
       tick: action,
     })
   }
@@ -85,6 +86,10 @@ class Playback {
     const clampedNewStart = Math.max(0.0, actualNewStart)
     const clampedNewEnd = Math.min(this._sequence.duration, actualNewEnd)
     this.visibleRange = { start: clampedNewStart, end: clampedNewEnd }
+  }
+
+  zoomExtents() {
+    this.visibleRange = { start: 0.0, end: this._sequence.duration }
   }
 
   tick(deltaSeconds) {

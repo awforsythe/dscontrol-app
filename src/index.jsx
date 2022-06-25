@@ -29,6 +29,8 @@ const App = observer(({ store }) => {
         store.playback.seekToStart()
       } else if (event.key === 'End') {
         store.playback.seekToEnd()
+      } else if (event.key === 'z' || event.key === 'Z') {
+        store.playback.zoomExtents()
       }
     }
   })
