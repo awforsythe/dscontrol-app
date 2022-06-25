@@ -1,7 +1,9 @@
+import Sequence from './sequence'
 import Playback from './playback'
 
 class Store {
-  playback = new Playback()
+  sequence = new Sequence()
+  playback = new Playback(this.sequence)
 }
 
 export default Store

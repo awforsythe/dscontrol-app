@@ -27,7 +27,7 @@ const App = observer(({ store }) => {
     const actualNewStartTime = needsSwap ? newEndTime : newStartTime
     const actualNewEndTime = needsSwap ? newStartTime : newEndTime
     const clampedNewStartTime = Math.max(0.0, actualNewStartTime)
-    const clampedNewEndTime = Math.min(store.playback.duration, actualNewEndTime)
+    const clampedNewEndTime = Math.min(store.sequence.duration, actualNewEndTime)
     setVisibleRangeStartTime(clampedNewStartTime)
     setVisibleRangeEndTime(clampedNewEndTime)
   }
@@ -48,7 +48,10 @@ const App = observer(({ store }) => {
       </div>
       <div id="main-middle">
         <div id="main-left">
-          <PlaybackView playback={store.playback} />
+          <PlaybackView
+            sequence={store.sequence}
+            playback={store.playback}
+          />
         </div>
         <div id="main-right">
           
@@ -88,7 +91,7 @@ const App = observer(({ store }) => {
         />
         <Timeline
           isPlaying={store.playback.isPlaying}
-          duration={store.playback.duration}
+          duration={store.sequence.duration}
           visibleRangeStartTime={visibleRangeStartTime}
           visibleRangeEndTime={visibleRangeEndTime}
           playbackTime={store.playback.position}
