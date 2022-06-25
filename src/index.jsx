@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import ReactDOM from 'react-dom'
 import { observer } from 'mobx-react-lite'
 
@@ -19,18 +19,6 @@ const store = new Store()
 const App = observer(({ store }) => {
   const [angle, setAngle] = useState(0.0)
   const [distance, setDistance] = useState(0.0)
-
-  const [visibleRangeStartTime, setVisibleRangeStartTime] = useState(2.0)
-  const [visibleRangeEndTime, setVisibleRangeEndTime] = useState(15.0)
-  function onAdjustVisibleRange(newStartTime, newEndTime) {
-    const needsSwap = newStartTime > newEndTime
-    const actualNewStartTime = needsSwap ? newEndTime : newStartTime
-    const actualNewEndTime = needsSwap ? newStartTime : newEndTime
-    const clampedNewStartTime = Math.max(0.0, actualNewStartTime)
-    const clampedNewEndTime = Math.min(store.sequence.duration, actualNewEndTime)
-    setVisibleRangeStartTime(clampedNewStartTime)
-    setVisibleRangeEndTime(clampedNewEndTime)
-  }
 
   useRenderLoop((deltaSeconds) => store.playback.tick(deltaSeconds))
   useGlobalKeyDownHandler((event) => {
@@ -92,11 +80,11 @@ const App = observer(({ store }) => {
         <Timeline
           isPlaying={store.playback.isPlaying}
           duration={store.sequence.duration}
-          visibleRangeStartTime={visibleRangeStartTime}
-          visibleRangeEndTime={visibleRangeEndTime}
+          visibleRangeStartTime={store.playback.visibleRange.start}
+          visibleRangeEndTime={store.playback.visibleRange.end}
           playbackTime={store.playback.position}
           onJog={(newPosition) => store.playback.scrubTo(newPosition)}
-          onAdjustVisibleRange={onAdjustVisibleRange}
+          onAdjustVisibleRange={(newStart, newEnd) => store.playback.adjustVisibleRange(newStart, newEnd)}
         >
           <div style={{ backgroundColor: 'rgba(128, 128, 255, 10%)'}} />
           <div style={{ backgroundColor: 'rgba(128, 128, 255, 10%)'}} />

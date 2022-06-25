@@ -86,9 +86,13 @@ function useRangeBarDivs() {
 
 function RangeBar(props) {
   const { normalizedPlaybackPosition, normalizedPosition, normalizedDuration } = props
+  const clampedNormalizedPosition = Math.min(1.0, normalizedPosition)
+  const clampedNormalizedDuration = Math.min(1.0 - clampedNormalizedPosition, normalizedDuration)
+
+  const drawPlayheadIndicator = normalizedPlaybackPosition <= 1.0
   const playheadIndicatorLeftOffsetPercentage = (normalizedPlaybackPosition * 100.0).toFixed(4)
-  const leftOffsetPercentage = (normalizedPosition * 100.0).toFixed(4)
-  const widthPercentage = (normalizedDuration * 100.0).toFixed(4)
+  const leftOffsetPercentage = (clampedNormalizedPosition * 100.0).toFixed(4)
+  const widthPercentage = (clampedNormalizedDuration * 100.0).toFixed(4)
 
   const [containerRef, startHandleRef, innerRef, endHandleRef, initDragState] = useRangeBarDivs()
   const [dragState, setDragState] = useState(initDragState(null))
@@ -99,7 +103,7 @@ function RangeBar(props) {
       setDragState(initDragState(event))
     } else if (dragState.mode) {
       const mouseDeltaX = event.clientX - dragState.mouseX
-      const [newStart, newEnd] = dragState.toNormalizedRange(mouseDeltaX, normalizedPosition, normalizedDuration)
+      const [newStart, newEnd] = dragState.toNormalizedRange(mouseDeltaX, clampedNormalizedPosition, clampedNormalizedDuration)
       onAdjustRange(newStart, newEnd)
     }
   })
@@ -112,7 +116,10 @@ function RangeBar(props) {
       <div className="range-bar-playhead-indicator-container">
         <div
           className="range-bar-playhead-indicator"
-          style={{ left: `${playheadIndicatorLeftOffsetPercentage}%` }}
+          style={{
+            display: drawPlayheadIndicator ? 'block' : 'none',
+            left: `${playheadIndicatorLeftOffsetPercentage}%`
+          }}
         />
       </div>
       <div
