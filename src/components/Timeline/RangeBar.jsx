@@ -85,14 +85,31 @@ function useRangeBarDivs() {
 }
 
 function RangeBar(props) {
-  const { normalizedPlaybackPosition, normalizedPosition, normalizedDuration } = props
+  const { isPlaying, normalizedPlaybackPosition, normalizedPosition, normalizedDuration } = props
   const clampedNormalizedPosition = Math.min(1.0, normalizedPosition)
   const clampedNormalizedDuration = Math.min(1.0 - clampedNormalizedPosition, normalizedDuration)
 
-  const drawPlayheadIndicator = normalizedPlaybackPosition <= 1.0
   const playheadIndicatorLeftOffsetPercentage = (normalizedPlaybackPosition * 100.0).toFixed(4)
   const leftOffsetPercentage = (clampedNormalizedPosition * 100.0).toFixed(4)
   const widthPercentage = (clampedNormalizedDuration * 100.0).toFixed(4)
+
+  let drawGhost = false
+  let ghostLeftOffsetPercentage = '0.0000'
+  const rangeEnd = clampedNormalizedPosition + clampedNormalizedDuration
+  if (clampedNormalizedPosition > 0.0 || rangeEnd < 1.0) {
+    const playheadIsInRange = normalizedPlaybackPosition >= clampedNormalizedPosition && normalizedPlaybackPosition <= rangeEnd
+    if (isPlaying && playheadIsInRange && rangeEnd < 1.0) {
+      drawGhost = true
+      if (rangeEnd + clampedNormalizedDuration < 1.0) {
+        ghostLeftOffsetPercentage = (rangeEnd * 100.0).toFixed(4)
+      } else {
+        ghostLeftOffsetPercentage = ((1.0 - clampedNormalizedDuration) * 100.0).toFixed(4)
+      }
+    } else if (!isPlaying && !playheadIsInRange) {
+      drawGhost = true
+      ghostLeftOffsetPercentage = playheadIndicatorLeftOffsetPercentage
+    }
+  }
 
   const [containerRef, startHandleRef, innerRef, endHandleRef, initDragState] = useRangeBarDivs()
   const [dragState, setDragState] = useState(initDragState(null))
@@ -117,8 +134,17 @@ function RangeBar(props) {
         <div
           className="range-bar-playhead-indicator"
           style={{
-            display: drawPlayheadIndicator ? 'block' : 'none',
             left: `${playheadIndicatorLeftOffsetPercentage}%`
+          }}
+        />
+      </div>
+      <div className="range-bar-ghost-container">
+        <div
+          className="range-bar-ghost"
+          style={{
+            display: drawGhost ? 'block' : 'none',
+            left: `${ghostLeftOffsetPercentage}%`,
+            width: `${widthPercentage}%`,
           }}
         />
       </div>
@@ -146,6 +172,7 @@ function RangeBar(props) {
   )
 }
 RangeBar.propTypes = {
+  isPlaying: PropTypes.bool.isRequired,
   normalizedPlaybackPosition: PropTypes.number.isRequired,
   normalizedPosition: PropTypes.number.isRequired,
   normalizedDuration: PropTypes.number.isRequired,
