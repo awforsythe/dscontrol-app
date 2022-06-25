@@ -22,8 +22,12 @@ const App = observer(({ store }) => {
 
   useRenderLoop((deltaSeconds) => store.playback.tick(deltaSeconds))
   useGlobalKeyDownHandler((event) => {
-    if (event.key == ' ') {
+    if (event.key === ' ') {
       store.playback.toggle()
+    } else if (event.key === 'Home') {
+      store.playback.seekToStart()
+    } else if (event.key === 'End') {
+      store.playback.seekToEnd()
     }
   })
 
