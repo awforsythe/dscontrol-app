@@ -107,7 +107,11 @@ function RangeBar(props) {
       }
     } else if (!isPlaying && !playheadIsInRange) {
       drawGhost = true
-      ghostLeftOffsetPercentage = playheadIndicatorLeftOffsetPercentage
+      if (normalizedPlaybackPosition + normalizedDuration > 1.0) {
+        ghostLeftOffsetPercentage = ((1.0 - clampedNormalizedDuration) * 100.0).toFixed(4)
+      } else {
+        ghostLeftOffsetPercentage = playheadIndicatorLeftOffsetPercentage
+      }
     }
   }
 
