@@ -26,6 +26,8 @@ class Playback {
       play: action,
       stop: action,
       toggle: action,
+      seekToStart: action,
+      seekToEnd: action,
       scrubTo: action,
       adjustVisibleRange: action,
       tick: action,
@@ -48,6 +50,27 @@ class Playback {
         this.position = 0.0
       }
       this.play()
+    }
+  }
+  
+  seekToStart() {
+    const rangeDuration = this.visibleRange.end - this.visibleRange.start
+    this.stop()
+    this.position = 0.0
+    this.visibleRange.start = 0.0
+    this.visibleRange.end = Math.min(rangeDuration, this._sequence.duration)
+  }
+
+  seekToEnd() {
+    const rangeDuration = this.visibleRange.end - this.visibleRange.start
+    this.stop()
+    this.position = this._sequence.duration
+    if (rangeDuration < this._sequence.duration) {
+      this.visibleRange.end = this._sequence.duration
+      this.visibleRange.start = this.visibleRange.end - rangeDuration
+    } else {
+      this.visibleRange.start = 0.0
+      this.visibleRange.end = this._sequence.duration
     }
   }
 

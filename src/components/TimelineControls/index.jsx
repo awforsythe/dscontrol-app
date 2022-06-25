@@ -6,7 +6,7 @@ import PlaybackButtons from './PlaybackButtons'
 import './style.less'
 
 function TimelineControls(props) {
-  const { isPlaying, onTogglePlayback } = props
+  const { isPlaying, onTogglePlayback, onSeekToStart, onSeekToEnd } = props
   return (
     <div className="timeline-controls">
       <div className="timeline-controls-top">
@@ -17,6 +17,8 @@ function TimelineControls(props) {
         <PlaybackButtons
           isPlaying={isPlaying}
           onClickPlay={onTogglePlayback}
+          onClickRewind={onSeekToStart}
+          onClickFastForward={onSeekToEnd}
         />
       </div>
     </div>
@@ -25,6 +27,8 @@ function TimelineControls(props) {
 TimelineControls.propTypes = {
   isPlaying: PropTypes.bool.isRequired,
   onTogglePlayback: PropTypes.func.isRequired,
+  onSeekToStart: PropTypes.func.isRequired,
+  onSeekToEnd: PropTypes.func.isRequired,
 }
 
 export default TimelineControls

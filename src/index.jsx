@@ -23,9 +23,7 @@ const App = observer(({ store }) => {
   useRenderLoop((deltaSeconds) => store.playback.tick(deltaSeconds))
   useGlobalKeyDownHandler((event) => {
     if (event.key == ' ') {
-      if (event.target.className !== 'play') {
-        store.playback.toggle()
-      }
+      store.playback.toggle()
     }
   })
 
@@ -76,6 +74,8 @@ const App = observer(({ store }) => {
         <TimelineControls
           isPlaying={store.playback.isPlaying}
           onTogglePlayback={() => store.playback.toggle()}
+          onSeekToStart={() => store.playback.seekToStart()}
+          onSeekToEnd={() => store.playback.seekToEnd()}
         />
         <Timeline
           isPlaying={store.playback.isPlaying}
