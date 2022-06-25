@@ -2,7 +2,7 @@ import React from 'react'
 import { observer } from 'mobx-react-lite'
 
 const Button = ({ label, onClick }) => (
-  <button style={{ fontSize: 16, minWidth: 100 }} onClick={onClick}>
+  <button style={{ fontSize: 16, minWidth: 100 }} onClick={(event) => { event.target.blur(); onClick() }}>
     {label}
   </button>
 )
