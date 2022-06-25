@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react'
 import ReactDOM from 'react-dom'
+import { observer } from 'mobx-react-lite'
 
 import Store from './state'
 
@@ -15,50 +16,10 @@ import './style.less'
 
 const store = new Store()
 
-function usePlaybackState() {
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [playbackStartTime, setPlaybackStartTime] = useState(0.0)
-
-  const prevTimestamp = useRef(null)
-  const handle = useRef(null)
-  function tick(timestamp) {
-    if (prevTimestamp.current !== null) {
-      const deltaSeconds = (timestamp - prevTimestamp.current) / 1000.0
-      setPlaybackStartTime((prev) => prev + deltaSeconds)
-    }
-    prevTimestamp.current = timestamp
-    handle.current = requestAnimationFrame(tick)
-  }
-
-  function onTogglePlayback() {
-    if (isPlaying) {
-      setIsPlaying(false)
-      if (handle.current) {
-        cancelAnimationFrame(handle.current)
-        handle.current = null
-      }
-    } else {
-      setIsPlaying(true)
-      prevTimestamp.current = null
-      handle.current = requestAnimationFrame(tick)
-    }
-  }
-
-  function onJog(desiredPlaybackTime) {
-    if (!isPlaying) {
-      setPlaybackStartTime(desiredPlaybackTime)
-    }
-  }
-
-  const playbackTime = playbackStartTime
-  return [isPlaying, playbackTime, onTogglePlayback, onJog]
-}
-
-function App({ store }) {
+const App = observer(({ store }) => {
   const [angle, setAngle] = useState(0.0)
   const [distance, setDistance] = useState(0.0)
 
-  const [duration, setDuration] = useState(20.0)
   const [visibleRangeStartTime, setVisibleRangeStartTime] = useState(2.0)
   const [visibleRangeEndTime, setVisibleRangeEndTime] = useState(15.0)
   function onAdjustVisibleRange(newStartTime, newEndTime) {
@@ -66,19 +27,16 @@ function App({ store }) {
     const actualNewStartTime = needsSwap ? newEndTime : newStartTime
     const actualNewEndTime = needsSwap ? newStartTime : newEndTime
     const clampedNewStartTime = Math.max(0.0, actualNewStartTime)
-    const clampedNewEndTime = Math.min(duration, actualNewEndTime)
+    const clampedNewEndTime = Math.min(store.playback.duration, actualNewEndTime)
     setVisibleRangeStartTime(clampedNewStartTime)
     setVisibleRangeEndTime(clampedNewEndTime)
   }
 
-  useRenderLoop((deltaSeconds) => {store.playback.tick(deltaSeconds)})
-
-  const [isPlaying, playbackTime, onTogglePlayback, onJog] = usePlaybackState()
-
+  useRenderLoop((deltaSeconds) => store.playback.tick(deltaSeconds))
   useGlobalKeyDownHandler((event) => {
     if (event.key == ' ') {
       if (event.target.className !== 'play') {
-        onTogglePlayback()
+        store.playback.toggle()
       }
     }
   })
@@ -125,16 +83,16 @@ function App({ store }) {
           />
         </div>
         <TimelineControls
-          isPlaying={isPlaying}
-          onTogglePlayback={onTogglePlayback}
+          isPlaying={store.playback.isPlaying}
+          onTogglePlayback={() => store.playback.toggle()}
         />
         <Timeline
-          isPlaying={isPlaying}
-          duration={duration}
+          isPlaying={store.playback.isPlaying}
+          duration={store.playback.duration}
           visibleRangeStartTime={visibleRangeStartTime}
           visibleRangeEndTime={visibleRangeEndTime}
-          playbackTime={playbackTime}
-          onJog={onJog}
+          playbackTime={store.playback.position}
+          onJog={(newPosition) => store.playback.scrubTo(newPosition)}
           onAdjustVisibleRange={onAdjustVisibleRange}
         >
           <div style={{ backgroundColor: 'rgba(128, 128, 255, 10%)'}} />
@@ -144,6 +102,6 @@ function App({ store }) {
       </div>
     </>
   );
-}
+})
 
 ReactDOM.render(<App store={store} />, document.getElementById('main'));

@@ -3,7 +3,7 @@ import { makeObservable, observable, action } from 'mobx'
 class Playback {
   isPlaying = false
   position = 0.0
-  duration = 10.0
+  duration = 20.0
 
   constructor() {
     makeObservable(this, {
@@ -12,6 +12,7 @@ class Playback {
       duration: observable,
       play: action,
       stop: action,
+      toggle: action,
       scrubTo: action,
       setDuration: action,
       tick: action,
@@ -24,6 +25,14 @@ class Playback {
   
   stop() {
     this.isPlaying = false
+  }
+
+  toggle() {
+    if (this.isPlaying) {
+      this.stop()
+    } else if (this.position < this.duration) {
+      this.play()
+    }
   }
 
   scrubTo(newPosition) {
