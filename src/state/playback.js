@@ -9,16 +9,7 @@ class Playback {
   constructor(sequence) {
     this._sequence = sequence
     this.visibleRange.end = this._sequence.duration
-    this._sequence.onLoad = () => {
-      this.stop()
-      const rangeDuration = this.visibleRange.end - this.visibleRange.start
-      this.visibleRange.start = 0.0
-      this.visibleRange.end = this._sequence.duration
-      if (rangeDuration > 0.0 && rangeDuration < this._sequence.duration) {
-        this.visibleRange.end = rangeDuration
-      }
-      this.position = 0.0
-    }
+    this._sequence.onLoad = () => this._onSequenceLoad()
     makeObservable(this, {
       isPlaying: observable,
       position: observable,
@@ -33,6 +24,17 @@ class Playback {
       zoomExtents: action,
       tick: action,
     })
+  }
+
+  _onSequenceLoad() {
+    this.stop()
+    const rangeDuration = this.visibleRange.end - this.visibleRange.start
+    this.visibleRange.start = 0.0
+    this.visibleRange.end = this._sequence.duration
+    if (rangeDuration > 0.0 && rangeDuration < this._sequence.duration) {
+      this.visibleRange.end = rangeDuration
+    }
+    this.position = 0.0
   }
 
   play() {

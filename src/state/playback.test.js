@@ -25,6 +25,29 @@ describe('Playback.constructor', () => {
   })
 })
 
+describe('Playback._onSequenceLoad', () => {
+  test('stops playback and rewinds to start', () => {
+    playback.scrubTo(4.0)
+    playback.play()
+    sequence.onLoad()
+    expect(playback.position).toBe(0.0)
+    expect(playback.isPlaying).toBe(false)
+  })
+  test('shrinks visible range to fit shorter sequence', () => {
+    sequence.duration = 7.0
+    sequence.onLoad()
+    expect(playback.visibleRange.start).toBe(0.0)
+    expect(playback.visibleRange.end).toBe(7.0)
+  })
+  test('shifts visible range to zero if sequence is longer', () => {
+    playback.adjustVisibleRange(1.0, 11.0)
+    sequence.duration = 25.0
+    sequence.onLoad()
+    expect(playback.visibleRange.start).toBe(0.0)
+    expect(playback.visibleRange.end).toBe(10.0)
+  })
+})
+
 describe('Playback.play, Playback.stop, Playback.toggle', () => {
   test('changes playback state', () => {
     expect(playback.isPlaying).toBe(false)
@@ -155,7 +178,17 @@ describe('Playback.tick', () => {
     expect(playback.isPlaying).toBe(false)
     expect(playback.position).toBe(sequence.duration)
   })
-  test('shifts visible range if playhead goes out of view', () => {
+  test('shifts visible range left if playhead is out of view', () => {
+    playback.adjustVisibleRange(2.0, 7.0)
+    playback.scrubTo(1.0)
+    playback.play()
+    playback.tick(0.016)
+    expect(playback.position).toBeGreaterThan(1.0)
+    expect(playback.position).toBeCloseTo(1.016)
+    expect(playback.visibleRange.start).toBe(playback.position)
+    expect(playback.visibleRange.end).toBeCloseTo(6.016)
+  })
+  test('shifts visible range right if playhead advances out of view', () => {
     playback.adjustVisibleRange(2.0, 7.0)
     playback.scrubTo(6.999)
     playback.play()
