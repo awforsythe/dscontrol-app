@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
 import { observer } from 'mobx-react-lite'
 
@@ -86,6 +86,7 @@ const App = observer(({ store }) => {
           onSeekToEnd={() => store.playback.seekToEnd()}
         />
         <Timeline
+          prefs={store.prefs.timeline}
           isPlaying={store.playback.isPlaying}
           duration={store.sequence.duration}
           visibleRangeStartTime={store.playback.visibleRange.start}

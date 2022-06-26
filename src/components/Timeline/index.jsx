@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 
 import { useElementRect, useGlobalDragHandler } from '../common/util'
@@ -7,7 +7,7 @@ import Playhead from './Playhead'
 
 import './style.less'
 
-function Timeline(props) {
+function Timeline({prefs, ...props}) {
   const { children, isPlaying, duration, visibleRangeStartTime, visibleRangeEndTime, playbackTime, onJog } = props
   const [bottomRef, bottomRect] = useElementRect()
 
@@ -29,9 +29,20 @@ function Timeline(props) {
     }
   })
 
+  function onWheel(event) {
+    const [action, isFaster] = prefs.resolveAction(event.shiftKey, event.altKey)
+    if (action === 'zoom') {
+      console.log('zoom' + (isFaster ? ' faster' : ''))
+    } else if (action === 'scroll') {
+      console.log('scroll' + (isFaster ? ' faster' : ''))
+    } else if (action === 'scrub') {
+      console.log('scrub' + (isFaster ? ' faster' : ''))
+    }
+  }
+
   const { onAdjustVisibleRange } = props
   return (
-    <div className="timeline">
+    <div className="timeline" onWheel={onWheel}>
       <div
         className="timeline-top"
         onMouseDown={startScrubbing}
@@ -65,6 +76,7 @@ function Timeline(props) {
   )
 }
 Timeline.propTypes = {
+  prefs: PropTypes.object.isRequired,
   children: PropTypes.any,
   isPlaying: PropTypes.bool.isRequired,
   duration: PropTypes.number.isRequired,
