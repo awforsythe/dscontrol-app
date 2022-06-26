@@ -29,14 +29,74 @@ function Timeline({prefs, ...props}) {
     }
   })
 
+  function handleZoom(event, isFaster) {
+    // Determine the playback time over which the mouse cursor is centered: we want to
+    // keep this time at the same screen location as we zoom in or out
+    const rect = event.currentTarget.getBoundingClientRect()
+    const normalizedX = (event.clientX - rect.x) / rect.width
+    const rangeDuration = visibleRangeEndTime - visibleRangeStartTime
+
+    // Determine the magnitude of the change in our visible playback range as it
+    // shrinks (if zooming in) or grows (if zooming out)
+    const zoomIn = event.deltaY < 0
+    const absDelta = 1.0 * (isFaster ? 3 : 1)
+
+    // Split the change proportionally
+    const leftDelta = normalizedX * absDelta
+    const rightDelta = absDelta - leftDelta
+    const newStart = Math.max(0.0, visibleRangeStartTime + leftDelta * (zoomIn ? 1 : -1))
+    const newEnd = Math.min(duration, visibleRangeEndTime + rightDelta * (zoomIn ? -1 : 1))
+
+    const minRangeDuration = 0.2
+    const newRangeDuration = newEnd - newStart
+    if (zoomIn)  {
+      if (newRangeDuration >= minRangeDuration) {
+        onAdjustVisibleRange(newStart, newEnd)
+      } else {
+        const centerTime = visibleRangeStartTime + (rangeDuration * normalizedX)
+        const clampedStart = centerTime - (minRangeDuration * normalizedX)
+        const clampedEnd = clampedStart + minRangeDuration
+        onAdjustVisibleRange(clampedStart, clampedEnd)
+      }
+    } else {
+      onAdjustVisibleRange(newStart, newEnd)
+    }
+  }
+
+  function handleScroll(event, isFaster) {
+    // Shift the visible range left or right, clamped to the bounds of the sequence
+    const scrollForward = event.deltaY > 0
+    const delta = 0.2 * (isFaster ? 3 : 1)
+    const rangeDuration = visibleRangeEndTime - visibleRangeStartTime
+    if (scrollForward) { 
+      // Move the right edge forward, stopping if we hit the end of the sequence
+      const newRangeEnd = Math.min(duration, visibleRangeEndTime + delta)
+      const newRangeStart = newRangeEnd - rangeDuration
+      onAdjustVisibleRange(newRangeStart, newRangeEnd)
+    } else {
+      // Move the left edge backward, stopping if we hit the end of the sequence
+      const newRangeStart = Math.max(0.0, visibleRangeStartTime - delta)
+      const newRangeEnd = newRangeStart + rangeDuration
+      onAdjustVisibleRange(newRangeStart, newRangeEnd)
+    }
+  }
+
+  function handleScrub(event, isFaster) {
+    // Shift the playhead left or right, clamped to the total duration
+    const scrubForward = event.deltaY > 0
+    const delta = 0.2 * (isFaster ? 3 : 1) * (scrubForward ? 1 : -1)
+    const newPosition = Math.max(0.0, Math.min(duration, playbackTime + delta))
+    onJog(newPosition)
+  }
+
   function onWheel(event) {
-    const [action, isFaster] = prefs.resolveAction(event.shiftKey, event.altKey)
+    const [action, isFaster] = prefs.resolveAction(event.shiftKey, event.altKey)    
     if (action === 'zoom') {
-      console.log('zoom' + (isFaster ? ' faster' : ''))
+      handleZoom(event, isFaster)
     } else if (action === 'scroll') {
-      console.log('scroll' + (isFaster ? ' faster' : ''))
+      handleScroll(event, isFaster)
     } else if (action === 'scrub') {
-      console.log('scrub' + (isFaster ? ' faster' : ''))
+      handleScrub(event, isFaster)
     }
   }
 
