@@ -36,6 +36,9 @@ class Playback {
   }
 
   play() {
+    if (!this.isPlaying && this.position >= this._sequence.duration) {
+      this.position = 0.0
+    }
     this.isPlaying = true
   }
   
@@ -47,9 +50,6 @@ class Playback {
     if (this.isPlaying) {
       this.stop()
     } else {
-      if (this.position >= this._sequence.duration) {
-        this.position = 0.0
-      }
       this.play()
     }
   }
@@ -126,12 +126,13 @@ class Playback {
       // Shift the right edge of the playback range by up to one range-bar-length,
       // stopping short if we're less than that length from the end of the sequence,
       // but keeping the width of the range bar constant
-      if (this.position + rangeDuration >= this._sequence.duration) {
+      if (this.visibleRange.end + rangeDuration >= this._sequence.duration) {
         this.visibleRange.end = this._sequence.duration
+        this.visibleRange.start = this.visibleRange.end - rangeDuration
       } else {
-        this.visibleRange.end = this.position + rangeDuration
+        this.visibleRange.start = this.visibleRange.end
+        this.visibleRange.end = this.visibleRange.start + rangeDuration
       }
-      this.visibleRange.start = this.visibleRange.end - rangeDuration
     }
   }
 } 
