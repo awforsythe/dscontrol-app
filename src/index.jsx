@@ -11,6 +11,7 @@ import PlaybackView from './components/PlaybackView'
 import Joystick from './components/Joystick'
 import TimelineControls from './components/TimelineControls'
 import Timeline from './components/Timeline'
+import TimelineTrack from './components/TimelineTrack'
 
 import './style.less'
 
@@ -95,9 +96,9 @@ const App = observer(({ store }) => {
           onJog={(newPosition) => store.playback.scrubTo(newPosition)}
           onAdjustVisibleRange={(newStart, newEnd) => store.playback.adjustVisibleRange(newStart, newEnd)}
         >
-          <div style={{ backgroundColor: 'rgba(128, 128, 255, 10%)'}} />
-          <div style={{ backgroundColor: 'rgba(128, 128, 255, 10%)'}} />
-          <div style={{ backgroundColor: 'rgba(128, 128, 255, 10%)'}} />
+          <TimelineTrack />
+          <TimelineTrack />
+          <TimelineTrack />
         </Timeline>
       </div>
     </>

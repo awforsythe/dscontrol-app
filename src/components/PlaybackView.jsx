@@ -28,7 +28,15 @@ const PlaybackView = observer(({ sequence, playback }) => (
           const sequenceNum = Math.floor(Math.random() * 1000)
           const sequenceName = `seq_${String(sequenceNum).padStart(3, '0')}`
           const sequenceDuration = Math.random() * 29.0 + 1.0
-          sequence.load(sequenceName, sequenceDuration)
+          const stickEvents = {
+            left: [{at: 1.0}],
+            right: [],
+          }
+          const buttonEvents = {
+            a: [{at: 1.5, type: 'press'}, {at: 3.0, type: 'hold', duration: 0.75}],
+            b: [{at: 2.5, type: 'hold'}],
+          }
+          sequence.load(sequenceName, sequenceDuration, stickEvents, buttonEvents)
         }} />
       </li>
     </ul>
